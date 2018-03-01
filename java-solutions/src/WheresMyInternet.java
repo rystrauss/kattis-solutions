@@ -4,7 +4,7 @@ import java.util.*;
 public class WheresMyInternet {
 
     public WheresMyInternet(Scanner s) {
-
+    
     }
 
     public static void main(String[] args) {
