@@ -26,7 +26,7 @@ public class WheresMyInternet {
         for (int i = 1; i <= n; i++) {
             houses.add(new House(i, i == 1));
         }
-        while (m > 0 && s.hasNext()) {
+        for (int i = 0; i < m && s.hasNext(); i ++) {
             s.nextLine();
             House h1 = houses.get(s.nextInt() - 1);
             House h2 = houses.get(s.nextInt() - 1);
