@@ -40,7 +40,8 @@ public class Emergency {
     private void shortestPaths(int node, Set<Integer> visited, int[] dist, int count) {
         if (visited.contains(node))
             return;
-        dist[node] = count;
+        if (count < dist[node])
+            dist[node] = count;
         visited.add(node);
         for (int i = 0; i < n; i++) {
             if (graph[node][i]) {
