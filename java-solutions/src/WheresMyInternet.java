@@ -4,11 +4,11 @@ public class WheresMyInternet {
 
     private class House {
 
-        public int id;
-        public boolean connected;
-        public Set<House> adjHouses;
+        private int id;
+        private boolean connected;
+        private Set<House> adjHouses;
 
-        public House(int id, boolean connected) {
+        private House(int id, boolean connected) {
             this.id = id;
             this.connected = connected;
             adjHouses = new HashSet<>();
@@ -17,12 +17,11 @@ public class WheresMyInternet {
     }
 
     private List<House> houses;
-    private int n, m;
 
-    public WheresMyInternet(Scanner s) {
+    private WheresMyInternet(Scanner s) {
         houses = new ArrayList<>();
-        n = s.nextInt();
-        m = s.nextInt();
+        int n = s.nextInt();
+        int m = s.nextInt();
         for (int i = 1; i <= n; i++) {
             houses.add(new House(i, i == 1));
         }
@@ -67,16 +66,12 @@ public class WheresMyInternet {
     }
 
     public static void main(String[] args) {
-        Scanner s = null;
-        try {
-            s = new Scanner(System.in);
+        try (Scanner s = new Scanner(System.in)) {
             WheresMyInternet wmi = new WheresMyInternet(s);
             wmi.traverse();
             wmi.printUnconnected();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            s.close();
         }
     }
 

@@ -6,7 +6,7 @@ public class Emergency {
     private List<Set<Integer>> graph;
     private int n, k;
 
-    public Emergency(int n, int k) {
+    private Emergency(int n, int k) {
         graph = new ArrayList<>();
         for (int i = 0; i < n; i++)
             graph.add(new HashSet<>());
@@ -29,7 +29,7 @@ public class Emergency {
         }
     }
 
-    public int shortestPath() {
+    private int shortestPath() {
         Set<Integer> visited = new HashSet<>();
         return shortestPath(0, visited);
     }
@@ -51,9 +51,7 @@ public class Emergency {
     }
 
     public static void main(String[] args) {
-        Scanner s = null;
-        try {
-            s = new Scanner(new File("input.txt"));
+        try (Scanner s = new Scanner(new File("input.txt"))) {
             int n = s.nextInt();
             int k = s.nextInt();
             Emergency e = new Emergency(n, k);
@@ -61,8 +59,6 @@ public class Emergency {
             System.out.println(dist);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            s.close();
         }
     }
 
