@@ -25,7 +25,7 @@ public class WheresMyInternet {
         for (int i = 1; i <= n; i++) {
             houses.add(new House(i, i == 1));
         }
-        for (int i = 0; i < m && s.hasNext(); i ++) {
+        for (int i = 0; i < m && s.hasNext(); i++) {
             s.nextLine();
             House h1 = houses.get(s.nextInt() - 1);
             House h2 = houses.get(s.nextInt() - 1);
@@ -50,18 +50,20 @@ public class WheresMyInternet {
     }
 
     private void printUnconnected() {
-        boolean connected = true;
-        for (House h : houses) {
-            connected = h.connected;
-        }
-        if (connected) {
-            System.out.println("Connected");
-            return;
-        }
+        boolean connectedGraph = true;
+        StringBuilder out = new StringBuilder();
         for (House h : houses) {
             if (!h.connected) {
-                System.out.println(h.id);
+                out.append(h.id);
+                out.append("\n");
+                connectedGraph = false;
             }
+        }
+        if (connectedGraph) {
+            System.out.println("Connected");
+        } else {
+            out.deleteCharAt(out.length() - 1);
+            System.out.println(out.toString());
         }
     }
 
