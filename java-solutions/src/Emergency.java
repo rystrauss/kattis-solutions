@@ -3,11 +3,13 @@ import java.util.*;
 
 public class Emergency {
 
-    private boolean[][] graph;
+    private List<Set<Integer>> graph;
     private int n, k;
 
     public Emergency(int n, int k) {
-        graph = new boolean[n][n];
+        graph = new ArrayList<>();
+        for (int i = 0; i < n; i++)
+            graph.add(new HashSet<>());
         this.k = k;
         this.n = n;
         buildGraph();
@@ -17,37 +19,35 @@ public class Emergency {
         for (int v = 0; v < n; v++) {
             for (int w = v; w < n; w++) {
                 if (v + 1 == w) {
-                    graph[v][w] = true;
-                    graph[w][v] = true;
-                } else if (v % k == 0 && w % k == 0 && v != 0  && w != 0) {
-                    graph[v][w] = true;
-                    graph[w][v] = true;
+                    graph.get(v).add(w);
+                    graph.get(w).add(v);
+                } else if (v % k == 0 && w % k == 0 && v != 0 && w != 0) {
+                    graph.get(v).add(w);
+                    graph.get(w).add(v);
                 }
             }
         }
     }
 
-    public int[] shortestPaths() {
-        int[] dist = new int[n];
-        for (int i = 0; i < n; i++) {
-            dist[i] = Integer.MAX_VALUE;
-        }
+    public int shortestPath() {
         Set<Integer> visited = new HashSet<>();
-        shortestPaths(0, visited, dist, 0);
-        return dist;
+        return shortestPath(0, visited);
     }
 
-    private void shortestPaths(int node, Set<Integer> visited, int[] dist, int count) {
-        if (visited.contains(node))
-            return;
-        if (count < dist[node])
-            dist[node] = count;
-        visited.add(node);
+    private int shortestPath(int node, Set<Integer> visited) {
+        if (node == n - 1)
+            return 0;
+        int shortest = Integer.MAX_VALUE;
         for (int i = 0; i < n; i++) {
-            if (graph[node][i]) {
-                shortestPaths(i, visited, dist, count + 1);
+            if (graph.get(node).contains(i) && !visited.contains(i)) {
+                visited.add(node);
+                int dist = 1 + shortestPath(i, visited);
+                if (dist < shortest)
+                    shortest = dist;
+                visited.remove(node);
             }
         }
+        return shortest;
     }
 
     public static void main(String[] args) {
@@ -57,8 +57,8 @@ public class Emergency {
             int n = s.nextInt();
             int k = s.nextInt();
             Emergency e = new Emergency(n, k);
-            int[] dist = e.shortestPaths();
-            System.out.println(dist[n - 1]);
+            int dist = e.shortestPath();
+            System.out.println(dist);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
