@@ -3,20 +3,6 @@ import java.util.*;
 
 public class WheresMyInternet {
 
-    private class House {
-
-        private int id;
-        private boolean connected;
-        private Set<House> adjHouses;
-
-        private House(int id) {
-            this.id = id;
-            connected = false;
-            adjHouses = new HashSet<>();
-        }
-
-    }
-
     private List<House> houses;
 
     private WheresMyInternet(Scanner s) {
@@ -77,6 +63,20 @@ public class WheresMyInternet {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private class House {
+
+        private int id;
+        private boolean connected;
+        private Set<House> adjHouses;
+
+        private House(int id) {
+            this.id = id;
+            connected = false;
+            adjHouses = new HashSet<>();
+        }
+
     }
 
 }
