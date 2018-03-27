@@ -1,7 +1,5 @@
-2
-CTU Open Programming Contest
-7
-This is a secret message that noone should ever see Lets encrypt it
-2
-text too short
-0
+4
+17
+1276543
+9999999
+011
