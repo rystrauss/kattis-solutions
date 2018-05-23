@@ -5,3 +5,4 @@ java-solutions/kattis-java-solutions.iml
 *.txt
 out/
 cmake-build-debug/
+*.out
