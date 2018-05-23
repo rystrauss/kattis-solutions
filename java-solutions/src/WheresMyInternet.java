@@ -1,82 +1,54 @@
-import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 
 public class WheresMyInternet {
 
-    private List<House> houses;
+    private static int N, M;
+    private static HashMap<Integer, ArrayList<Integer>> connections;
+    private static boolean[] status;
+    private static int numConnected;
 
-    private WheresMyInternet(Scanner s) {
-        int n = s.nextInt();
-        int m = s.nextInt();
-        houses = new ArrayList<>(n);
-        for (int i = 1; i <= n; i++) {
-            houses.add(new House(i));
-        }
-        houses.get(0).connected = true;
-        for (int i = 0; i < m && s.hasNext(); i++) {
-            s.nextLine();
-            House h1 = houses.get(s.nextInt() - 1);
-            House h2 = houses.get(s.nextInt() - 1);
-            h1.adjHouses.add(h2);
-            h2.adjHouses.add(h1);
-        }
-    }
-
-    private void traverse() {
-        for (House h : houses.get(0).adjHouses) {
-            traverse(h);
-        }
-    }
-
-    private void traverse(House currHouse) {
-        if (currHouse.connected)
-            return;
-        currHouse.connected = true;
-        for (House h : currHouse.adjHouses) {
-            traverse(h);
-        }
-    }
-
-    private void printUnconnected() {
-        boolean connectedGraph = true;
-        StringBuilder out = new StringBuilder();
-        for (House h : houses) {
-            if (!h.connected) {
-                out.append(h.id);
-                out.append("\n");
-                connectedGraph = false;
+    private static void traverse(int pos) {
+        for (int i : connections.get(pos)) {
+            if (!status[i]) {
+                status[i] = true;
+                numConnected++;
+                traverse(i);
             }
-        }
-        if (connectedGraph) {
-            System.out.println("Connected");
-        } else {
-            out.deleteCharAt(out.length() - 1);
-            System.out.println(out.toString());
         }
     }
 
     public static void main(String[] args) {
-        try (Scanner s = new Scanner(new File("input.txt"))) {
-            WheresMyInternet wmi = new WheresMyInternet(s);
-            wmi.traverse();
-            wmi.printUnconnected();
+        try (Scanner s = new Scanner(System.in)) {
+            numConnected = 1;
+            N = s.nextInt();
+            M = s.nextInt();
+            connections = new HashMap<>();
+            status = new boolean[N];
+            status[0] = true;
+            for (int i = 0; i < N; i++) {
+                connections.put(i, new ArrayList<>());
+            }
+            for (int i = 0; i < M; i++) {
+                int a = s.nextInt();
+                int b = s.nextInt();
+                connections.get(a - 1).add(b - 1);
+                connections.get(b - 1).add(a - 1);
+            }
+            traverse(0);
+            if (numConnected == N) {
+                System.out.println("Connected");
+            } else {
+                for (int i = 0; i < N; i++) {
+                    if (!status[i]) {
+                        System.out.println(i + 1);
+                    }
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private class House {
-
-        private int id;
-        private boolean connected;
-        private Set<House> adjHouses;
-
-        private House(int id) {
-            this.id = id;
-            connected = false;
-            adjHouses = new HashSet<>();
-        }
-
     }
 
 }
