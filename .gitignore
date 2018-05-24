@@ -1,6 +1,6 @@
-.DS_Store
-.idea
-.iml
+*.DS_Store
+*.idea
+*.iml
 java-solutions/kattis-java-solutions.iml
 *.txt
 out/
