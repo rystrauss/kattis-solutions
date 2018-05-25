@@ -1,2 +1,2 @@
-# kattis-solutions
+# Kattis Solutions
 Solutions to problems from Kattis.
