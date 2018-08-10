@@ -20,7 +20,7 @@ public class FaultyRobot {
         }
 
         void addNodes(int N) {
-            for (int i = 1; i <= N ; i++) {
+            for (int i = 1; i <= N; i++) {
                 forced.put(i, null);
                 edges.put(i, new HashSet<>());
             }
@@ -49,7 +49,7 @@ public class FaultyRobot {
                 if (f == null) {
                     endpoints.add(pos);
                 }
-                for(Integer i : edges.get(pos)) {
+                for (Integer i : edges.get(pos)) {
                     if (f != null && f.equals(i)) {
                         traverse(endpoints, visited, i, false);
                     } else {
@@ -62,20 +62,17 @@ public class FaultyRobot {
     }
 
     public static void main(String[] args) {
-        try (Scanner in = new Scanner(System.in)) {
-            int N = in.nextInt();
-            int M = in.nextInt();
-            Graph g = new Graph();
-            g.addNodes(N);
-            for (int i = 0; i < M; i++) {
-                int a = in.nextInt();
-                int b = in.nextInt();
-                g.addEdge(a, b);
-            }
-            System.out.println(g.endpoints());
-        } catch (Exception e) {
-            e.printStackTrace();
+        Scanner in = new Scanner(System.in);
+        int N = in.nextInt();
+        int M = in.nextInt();
+        Graph g = new Graph();
+        g.addNodes(N);
+        for (int i = 0; i < M; i++) {
+            int a = in.nextInt();
+            int b = in.nextInt();
+            g.addEdge(a, b);
         }
+        System.out.println(g.endpoints());
     }
 
 }
