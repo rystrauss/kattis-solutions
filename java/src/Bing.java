@@ -2,12 +2,6 @@ import java.util.*;
 
 public class Bing {
 
-    private enum LexStatus {
-        WORD,
-        PREFIX,
-        NOT_WORD
-    }
-
     private static class TrieLexicon {
 
         private class Node {
@@ -37,11 +31,9 @@ public class Bing {
         }
 
         private Node root;
-        private int size;
 
         TrieLexicon() {
             root = new Node();
-            size = 0;
         }
 
         boolean add(String word) {
@@ -60,7 +52,6 @@ public class Bing {
             }
             if (!pos.isWord) {
                 pos.isWord = true;
-                size++;
                 return true;
             }
             return false;
@@ -82,17 +73,14 @@ public class Bing {
     }
 
     public static void main(String[] args) {
-        try (Scanner in = new Scanner(System.in)) {
-            TrieLexicon lexicon = new TrieLexicon();
-            int N = in.nextInt();
-            for (int i = 0; i < N; i++) {
-                String word = in.next();
-                int count = lexicon.possibleWords(word);
-                lexicon.add(word);
-                System.out.println(count);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        Scanner in = new Scanner(System.in);
+        TrieLexicon lexicon = new TrieLexicon();
+        int N = in.nextInt();
+        for (int i = 0; i < N; i++) {
+            String word = in.next();
+            int count = lexicon.possibleWords(word);
+            lexicon.add(word);
+            System.out.println(count);
         }
     }
 
