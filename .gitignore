@@ -6,4 +6,4 @@ java-solutions/kattis-java-solutions.iml
 out/
 cmake-build-debug/
 *.out
-java/src/Kattio.java
+python/__pycache__
