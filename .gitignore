@@ -8,3 +8,4 @@ cmake-build-debug/
 *.out
 python/__pycache__
 cpp/test.cpp
+python/tester.py
