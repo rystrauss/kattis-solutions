@@ -1,160 +1,162 @@
-/*
-    Note: While this solution is correct, it is currently too slow for Kattis.
- */
-
-import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Artwork {
 
-    private static class Node {
+    private class Cell {
 
-        Node parent;
-        int stroke, rank, x, y;
+        int x, y;
+        int rank;
+        Cell parent;
 
-        Node(int x, int y) {
-            parent = null;
-            stroke = 0;
-            rank = 0;
+        Cell(int x, int y) {
             this.x = x;
             this.y = y;
+            this.rank = 0;
+            this.parent = null;
         }
 
     }
 
-    private static int n, m, q;
-    private static Node[][] grid;
-    private static Set<Node> roots;
-    private static Map<Integer, Set<Node>> strokes;
+    private int n, m, q;
+    private int numSegments, numBlack;
+    private Cell[][] cellGrid;
+    private boolean[][] blackGrid;
+    private List<List<Cell>> strokes;
 
-    private static void addStrokes(Scanner s) {
-        for (int i = 1; i <= q; i++) {
-            strokes.put(i, new HashSet<>());
-            int x1 = s.nextInt() - 1;
-            int y1 = s.nextInt() - 1;
-            int x2 = s.nextInt() - 1;
-            int y2 = s.nextInt() - 1;
+    private Artwork(int n, int m, int q) {
+        this.n = n;
+        this.m = m;
+        this.q = q;
+
+        cellGrid = new Cell[n][m];
+        for (int x = 0; x < n; x++) {
+            for (int y = 0; y < m; y++) {
+                cellGrid[x][y] = new Cell(x, y);
+            }
+        }
+
+        strokes = new ArrayList<>(q);
+        numSegments = n * m;
+        blackGrid = new boolean[n][m];
+        numBlack = 0;
+    }
+
+    private void readStrokes(Scanner in) {
+        for (int i = 0; i < q; i++) {
+            List<Cell> cells = new LinkedList<>();
+
+            int x1, y1, x2, y2;
+            x1 = in.nextInt() - 1;
+            y1 = in.nextInt() - 1;
+            x2 = in.nextInt() - 1;
+            y2 = in.nextInt() - 1;
+
             if (x1 == x2) {
-                for (int j = y1; j <= y2; j++) {
-                    if (grid[x1][j].stroke == 0) {
-                        grid[x1][j].stroke = i;
-                        strokes.get(i).add(grid[x1][j]);
-                        roots.remove(grid[x1][j]);
+                for (int y = y1; y <= y2; y++) {
+                    if (!blackGrid[x1][y]) {
+                        cells.add(cellGrid[x1][y]);
+                        numBlack++;
+                        blackGrid[x1][y] = true;
                     }
                 }
             } else {
-                for (int j = x1; j <= x2; j++) {
-                    if (grid[j][y1].stroke == 0) {
-                        grid[j][y1].stroke = i;
-                        strokes.get(i).add(grid[j][y1]);
-                        roots.remove(grid[j][y1]);
+                for (int x = x1; x <= x2; x++) {
+                    if (!blackGrid[x][y1]) {
+                        cells.add(cellGrid[x][y1]);
+                        blackGrid[x][y1] = true;
+                        numBlack++;
                     }
                 }
             }
+
+            strokes.add(cells);
         }
     }
 
-    private static Node find(Node node) {
-        Set<Node> path = new HashSet<>();
-        Node curr = node;
-        while (curr.parent != null) {
-            path.add(curr);
-            curr = curr.parent;
+    private Cell find(Cell cell) {
+        List<Cell> path = new LinkedList<>();
+        Cell current = cell;
+
+        while (current.parent != null) {
+            path.add(current);
+            current = current.parent;
         }
-        for (Node n : path) {
-            n.parent = curr;
+
+        for (Cell c : path) {
+            c.parent = current;
         }
-        return curr;
+
+        return current;
     }
 
-    private static void union(Node a, Node b) {
-        Node rootA = find(a);
-        Node rootB = find(b);
-        if (rootA == rootB)
+    private void union(Cell a, Cell b) {
+        Cell p1 = find(a);
+        Cell p2 = find(b);
+
+        if (p1 == p2)
             return;
-        if (rootA.rank < rootB.rank) {
-            rootA.parent = rootB;
-            rootB.rank += rootA.rank + 1;
-            roots.remove(rootA);
+
+        if (p1.rank >= p2.rank) {
+            p2.parent = p1;
+            if (p1.rank == p2.rank)
+                p1.rank++;
         } else {
-            rootB.parent = rootA;
-            rootA.rank++;
-            roots.remove(rootB);
+            p1.parent = p2;
         }
+
+        numSegments--;
     }
 
-    private static void makeUnions(int stroke) {
-        if (stroke == q) {
+    private void initialize() {
+        final int[] XDELTA = {0, 0, -1, 1};
+        final int[] YDELTA = {1, -1, 0, 0};
+
+        for (int x = 0; x < n; x++) {
             for (int y = 0; y < m; y++) {
-                for (int x = 0; x < n; x++) {
-                    if (grid[x][y].stroke == 0 || grid[x][y].stroke > stroke) {
-                        if (x != n - 1 && (grid[x + 1][y].stroke == 0 || grid[x + 1][y].stroke > stroke)) {
-                            union(grid[x][y], grid[x + 1][y]);
-                        }
-                        if (y != m - 1 && (grid[x][y + 1].stroke == 0 || grid[x][y + 1].stroke > stroke)) {
-                            union(grid[x][y], grid[x][y + 1]);
-                        }
+                if (!blackGrid[x][y]) {
+                    for (int k = 0; k < XDELTA.length; k++) {
+                        int i = x + XDELTA[k];
+                        int j = y + YDELTA[k];
+                        if (0 <= i && i < n && 0 <= j && j < m && !blackGrid[i][j])
+                            union(cellGrid[x][y], cellGrid[i][j]);
                     }
                 }
             }
-        } else {
-            for (Node node : strokes.get(stroke + 1)) {
-                int x = node.x;
-                int y = node.y;
-                if (x != n - 1 && (grid[x + 1][y].stroke == 0 || grid[x + 1][y].stroke > stroke)) {
-                    union(node, grid[x + 1][y]);
-                }
-                if (y != m - 1 && (grid[x][y + 1].stroke == 0 || grid[x][y + 1].stroke > stroke)) {
-                    union(node, grid[x][y + 1]);
-                }
-                if (x != 0 && (grid[x - 1][y].stroke == 0 || grid[x - 1][y].stroke > stroke)) {
-                    union(node, grid[x - 1][y]);
-                }
-                if (y != 0 && (grid[x][y - 1].stroke == 0 || grid[x][y - 1].stroke > stroke)) {
-                    union(node, grid[x][y - 1]);
+        }
+    }
+
+    private void solve() {
+        int[] beauty = new int[q];
+        final int[] XDELTA = {0, 0, -1, 1};
+        final int[] YDELTA = {1, -1, 0, 0};
+        for (int stroke = q - 1; stroke >= 0; stroke--) {
+            beauty[stroke] = numSegments - numBlack;
+            for (Cell c : strokes.get(stroke)) {
+                blackGrid[c.x][c.y] = false;
+                numBlack--;
+                for (int k = 0; k < XDELTA.length; k++) {
+                    int x = c.x + XDELTA[k];
+                    int y = c.y + YDELTA[k];
+                    if (0 <= x && x < n && 0 <= y && y < m && !blackGrid[x][y])
+                        union(c, cellGrid[x][y]);
                 }
             }
+        }
+        for (int i : beauty) {
+            System.out.println(i);
         }
     }
 
     public static void main(String[] args) {
-        try (Scanner s = new Scanner(new File("input.txt"))) {
-            n = s.nextInt();
-            m = s.nextInt();
-            q = s.nextInt();
-
-            grid = new Node[n][m];
-            roots = new HashSet<>();
-            strokes = new HashMap<>();
-
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                    Node n = new Node(i, j);
-                    grid[i][j] = n;
-                    roots.add(n);
-                }
-            }
-
-            addStrokes(s);
-
-            int[] beauty = new int[q];
-
-            for (int i = q; i > 0; i--) {
-                if (i != q)
-                    roots.addAll(strokes.get(i + 1));
-                makeUnions(i);
-                beauty[i - 1] = roots.size();
-            }
-
-            StringBuilder sb = new StringBuilder(2 * q + 1);
-            for (int i = 0; i < q; i++) {
-                sb.append(beauty[i]).append("\n");
-            }
-
-            System.out.println(sb.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Scanner in = new Scanner(System.in);
+        Artwork art = new Artwork(in.nextInt(), in.nextInt(), in.nextInt());
+        art.readStrokes(in);
+        in.close();
+        art.initialize();
+        art.solve();
     }
 
 }
